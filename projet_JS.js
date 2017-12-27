@@ -1,14 +1,31 @@
 //a
 
-
+var mousePos;
 window.onload = function() {	  
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
     //ctx.fillStyle = "green";
     //ctx.fillRect(400,0,200,400);
+	canvas.addEventListener('mousemove', handleMousemove, false);
+    //canvas.addEventListener('mousedown', handleMousedown, false);
+    //canvas.addEventListener('mouseup', handleMouseup, false);
 	  animation();
 }
 
+ function handleMousemove(evt) {
+    // The mousePos will be taken into account in the animationLoop
+    mousePos = getMousePos(canvas, evt);
+  }
+  
+  
+  function getMousePos(canvas, evt) {
+   // necessary to take into account CSS boudaries
+   var rect = canvas.getBoundingClientRect();
+   return {
+      x: evt.clientX - rect.left,
+      y: evt.clientY - rect.top
+   };
+}
 //Animation des différents éléments de la scène
 
 function animation() {
@@ -19,8 +36,14 @@ function animation() {
   perso = new Perso();
 
   perso.drawBonhomme(100, 100);
+  
+  batiment=new Batiment("black",100,100);
+  batiment.drawBatiment(this.x,this.y);
 
- 
+ if(mousePos !== undefined) {
+        batiment.x = mousePos.x;
+        batiment.y = mousePos.y;
+ }
   
   // 3 - on met à jour les objets à dessiner
   
@@ -327,3 +350,30 @@ dessinePiedDroit() {
 
 
 // batiment
+class Batiment{
+	constructor(couleur,x,y){
+		this.couleur=couleur;
+		this.x=x;
+		this.y=y;
+	}
+	
+	getX(){
+		return this.x;
+	}
+	
+	getY(){
+		return this.y;
+	}
+	
+	drawBatiment(x,y){
+ctx.save();
+  
+  ctx.translate(x, y);
+  
+  ctx.fillStyle = this.couleur;
+  ctx.fillRect(0, 0, 40, 40);
+  
+  ctx.restore();
+	}
+	
+}
