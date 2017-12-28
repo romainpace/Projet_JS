@@ -1,15 +1,15 @@
 //a
 
 var mousePos;
-window.onload = function() {	  
+window.onload = function() {    
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
     //ctx.fillStyle = "green";
     //ctx.fillRect(400,0,200,400);
-	canvas.addEventListener('mousemove', handleMousemove, false);
+  canvas.addEventListener('mousemove', handleMousemove, false);
     //canvas.addEventListener('mousedown', handleMousedown, false);
     //canvas.addEventListener('mouseup', handleMouseup, false);
-	  animation();
+    animation();
 }
 
  function handleMousemove(evt) {
@@ -29,8 +29,8 @@ window.onload = function() {
 /*
 //Animation des différents éléments de la scène
 function animPerso(perso){
-	//ctx.save();
-		//Mette ds une fonction animPerso(perso) que l'on appelle dans anim
+  //ctx.save();
+    //Mette ds une fonction animPerso(perso) que l'on appelle dans anim
      perso.angleBrasGauche += perso.rotationBrasGauche;
   
   if ((perso.angleBrasGauche >= 1) || perso.angleBrasGauche <=-1){
@@ -153,8 +153,8 @@ class Perso{
   ctx.restore();
 }
 
-	animPerso(){
-		//Mette ds une fonction animPerso(perso) que l'on appelle dans anim
+  animPerso(){
+    //Mette ds une fonction animPerso(perso) que l'on appelle dans anim
      this.angleBrasGauche += this.rotationBrasGauche;
   
   if ((this.angleBrasGauche >= 1) || this.angleBrasGauche <=-1){
@@ -397,21 +397,21 @@ dessinePiedDroit() {
 
 // batiment
 class Batiment{
-	constructor(couleur,x,y){
-		this.couleur=couleur;
-		this.x=x;
-		this.y=y;
-	}
-	
-	getX(){
-		return this.x;
-	}
-	
-	getY(){
-		return this.y;
-	}
-	
-	drawBatiment(x,y){
+  constructor(couleur,x,y){
+    this.couleur=couleur;
+    this.x=x;
+    this.y=y;
+  }
+  
+  getX(){
+    return this.x;
+  }
+  
+  getY(){
+    return this.y;
+  }
+  
+  drawBatiment(x,y){
 ctx.save();
   
   ctx.translate(x, y);
@@ -420,6 +420,6 @@ ctx.save();
   ctx.fillRect(0, 0, 40, 40);
   
   ctx.restore();
-	}
-	
+  }
+  
 }
