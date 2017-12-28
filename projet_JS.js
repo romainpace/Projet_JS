@@ -26,8 +26,45 @@ window.onload = function() {
       y: evt.clientY - rect.top
    };
 }
+/*
 //Animation des différents éléments de la scène
-
+function animPerso(perso){
+	//ctx.save();
+		//Mette ds une fonction animPerso(perso) que l'on appelle dans anim
+     perso.angleBrasGauche += perso.rotationBrasGauche;
+  
+  if ((perso.angleBrasGauche >= 1) || perso.angleBrasGauche <=-1){
+    perso.rotationBrasGauche = -perso.rotationBrasGauche;
+  }
+  //console.log(perso.rotationBrasGauche);
+  //console.log(perso.angleBrasGauche);
+  
+  perso.angleBrasDroit +=perso.rotationBrasDroit;
+  
+   if ((perso.angleBrasDroit >= 1) || perso.angleBrasDroit <=-1){
+    perso.rotationBrasDroit = -perso.rotationBrasDroit;
+  }
+ 
+  perso.angleJambeGauche += perso.rotationJambeGauche;
+  
+  if ((perso.angleJambeGauche >= 1) || perso.angleJambeGauche <=-1){
+    perso.rotationJambeGauche = -perso.rotationJambeGauche;
+  }
+  
+  perso.angleJambeDroite += perso.rotationJambeDroite;
+  
+   if ((perso.angleJambeDroite >= 1) || perso.angleJambeDroite <=-1){
+    perso.rotationJambeDroite = -perso.rotationJambeDroite;
+  }
+  
+  
+ if (perso.xBonhomme >= canvas.width)
+   perso.xBonhomme = -perso.xBonhomme;
+  
+  perso.xBonhomme += 4 ;
+  //ctx.restore();
+}
+*/
 function animation() {
   // 1 - on efface le canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -36,6 +73,10 @@ function animation() {
   perso = new Perso();
 
   perso.drawBonhomme(100, 100);
+  //animPerso(perso);
+  //console.log(perso.angleBrasGauche);
+  //perso.animPerso();
+  
   
   batiment=new Batiment("black",100,100);
   batiment.drawBatiment(this.x,this.y);
@@ -106,8 +147,15 @@ class Perso{
   // Les jambes
   this.dessineJambeGauche();
   this.dessineJambeDroite();
+  
+  this.animPerso();
     
-      this.angleBrasGauche += this.rotationBrasGauche;
+  ctx.restore();
+}
+
+	animPerso(){
+		//Mette ds une fonction animPerso(perso) que l'on appelle dans anim
+     this.angleBrasGauche += this.rotationBrasGauche;
   
   if ((this.angleBrasGauche >= 1) || this.angleBrasGauche <=-1){
     this.rotationBrasGauche = -this.rotationBrasGauche;
@@ -136,8 +184,6 @@ class Perso{
    this.xBonhomme = -this.xBonhomme;
   
   this.xBonhomme += 4 ;
- 
-  ctx.restore();
 }
   
   dessineCouEtTete() {
