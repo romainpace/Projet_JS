@@ -22,10 +22,73 @@ class baseObject{
       this.Y += this.vitY;
     }
 
-
 }
 
 class Ennemi extends baseObject{
+
+  constructor(){
+    super();
+  }
+
+  drawn(ctx){
+    ctx.save();
+
+    ctx.translate(10,10);
+    ctx.fillRect(0, 0, 30, 25);
+
+    oeild(ctx);
+    oeilg(ctx);
+    bouche(ctx);
+    
+    ctx.restore();
+
+
+    function oeild(ctx){
+      ctx.save();
+      ctx.translate(5,5);
+      ctx.fillStyle='red';
+      
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(0, 5);
+      ctx.lineTo(6, 5);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function oeilg(ctx){
+      ctx.save();
+      ctx.translate(20,5);
+      ctx.fillStyle='red';
+      
+      ctx.beginPath();
+      ctx.moveTo(6, 5);
+      ctx.lineTo(0, 5);
+      ctx.lineTo(6, 0);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function bouche(ctx){
+      ctx.save();
+
+      ctx.fillStyle='red';
+
+      ctx.translate(5,17.5);
+      ctx.fillRect(0, 0, 2.5, 2.5);
+
+      ctx.translate(1.5,-1.5);
+      ctx.fillRect(0, 0, 17.5,2.5);
+
+      ctx.translate(16,1.5);
+      ctx.fillRect(0, 0, 2.5, 2.5);
+
+      ctx.restore();
+    }
+
+  }
 
 }
 
@@ -345,7 +408,8 @@ let ctx, canvas, w ,h;
 var inputStates = {};
 joueur= new Joueur(0,0,0,0,0);
 
-window.onload = function() {    
+window.onload = function() {
+
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
 	
