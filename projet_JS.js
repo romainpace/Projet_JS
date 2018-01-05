@@ -25,15 +25,15 @@ class baseObject(){
 
 }
 
-class Ennemi(){
+class Ennemi extends baseObject(){
 
 }
 
-class Joueur(){
+class Joueur extends baseObject(){
 
 }
 
-class Butin(){
+class Butin extends baseObject(){
 
 }
 
