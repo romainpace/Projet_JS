@@ -3,13 +3,26 @@
 
 class baseObject(){
     
-    constructor(posX, posY, vitesse, taille, vie){
-      this.posX = posX;
-      this.posY = posY;
-      this.vitesse = vitesse;
+    constructor(X, Y, vitX, vitY, taille, vie){
+      this.X = X;
+      this.Y = Y;
+      this.vitX = vitX;
+      this.vitY = vitY;
       this.taille = taille;
       this.vie = vie;
     }
+
+    draw(ctx) {
+      ctx.save();
+      ctx.restore();
+    }
+
+    move(){
+      this.x += this.vitX;
+      this.y += this.vitY;
+    }
+
+
 }
 
 class Ennemi(){
