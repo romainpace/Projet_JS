@@ -3,12 +3,11 @@
 
 class baseObject{
     
-    constructor(X, Y, vitX, vitY, taille, vie){
+    constructor(X, Y, vitX, vitY, vie){
       this.X = X;
       this.Y = Y;
       this.vitX = vitX;
       this.vitY = vitY;
-      this.taille = taille;
       this.vie = vie;
     }
 
@@ -21,6 +20,12 @@ class baseObject{
       this.X += this.vitX;
       this.Y += this.vitY;
     }
+	
+	//Cette fonction sera utile pour les ennemies et butins. Si un ennemie ou un butin sort du canvas, cette fonction le fera revenir au point opposé à celui dont il est sortit (j'espère que cette phrase est clair)
+	remiseAzero(){
+		this.X = canvas.w + 2;
+        this.Y = Math.random() * canvas.height;
+	}
 
 }
 
@@ -93,12 +98,12 @@ class Ennemi extends baseObject{
 }
 
 class Joueur extends baseObject{
-	constructor(X,Y,vitX,vitY,taille,vie){
-		super(X,Y,vitX,vitY,taille);
+	constructor(X,Y,vitX,vitY,vie){
+		super(X,Y,vitX,vitY);
 		this.vie=3;//On accorde 3 points de vie au joueur
 		this.points=0;// le nombre de points que l'on va obtenir au cours de la partie
 		this.couleurTete= "orange",
-		this.couleurCorps ="blue";
+		this.couleurCorps =coul;
 		 this.angleBrasGauche = 0.8;
 		this.angleAvantBrasGauche = -0.2;
   this.angleBrasDroit = -0.3; 
@@ -111,11 +116,12 @@ class Joueur extends baseObject{
 
 	//Va appeller la fonction detectionCollision et enlève un point de vie lorsqu'une collision est détecté.
 	setVie(){
-		
+		this.vie --;
 	}
 	
 	setPoints(){
-		
+		console.log(this.points);
+		this.points ++;
 	}
 	
 	/**
@@ -342,11 +348,86 @@ dessinePiedDroit() {
 }
 
 
+
 }
 
 class Butin extends baseObject{
-
+	constructor(X, Y, vitX, vitY, taille, vie,color){
+		super(X, Y, vitX, vitY, vie);
+		this.taille=taille;
+		this.radius= taille/2;
+		this.color=color;
+		this.angle=20;
+	}
+	
+	drawButin(){
+		ctx.save();
+		ctx.beginPath();
+	  
+		ctx.fillStyle = this.color;
+		ctx.arc(this.X, this.Y, this.radius, 0, 2*Math.PI);
+		ctx.fill();
+		ctx.fillStyle="black";
+		ctx.fillText("PHP",this.X-9,this.Y+3);
+		ctx.restore();
+    //this.color = 'black';
+	}	
+	
+	move(){
+		
+		//var incX = this.vitX * Math.cos(this.angle);
+		//var incY = this.vitY * Math.sin(this.angle);
+    
+		//this.X += calcDistanceToMove(10, incX);
+		//this.Y += calcDistanceToMove(10, incY);
+		
+		this.X += -Math.random();
+		this.Y += 0;
+	}
 }
+
+class JAVA extends Butin{
+	constructor(X, Y, vitX, vitY, vie){
+		super(X, Y, vitX, vitY,vie);
+		//this.taille=30;
+		this.radius=15;
+		this.color="red";
+	}
+	
+	drawJAVA(){
+		ctx.save();
+		ctx.beginPath();
+	  
+		ctx.fillStyle = this.color;
+		ctx.arc(this.X, this.Y, this.radius, 0, 2*Math.PI);
+		ctx.fill();
+		ctx.fillStyle="black";
+		ctx.fillText("JAVA",this.X-11,this.Y+3);
+		ctx.restore();
+	}
+}
+
+class PHP extends Butin{
+	constructor(X, Y, vitX, vitY, vie){
+		super(X, Y, vitX, vitY,vie);
+		//this.taille=30;
+		this.radius=25;
+		this.color="blue";
+	}
+	
+	drawPHP(){
+		ctx.save();
+		ctx.beginPath();
+	  
+		ctx.fillStyle = this.color;
+		ctx.arc(this.X, this.Y, this.radius, 0, 2*Math.PI);
+		ctx.fill();
+		ctx.fillStyle="black";
+		ctx.fillText("PHP",this.X-11,this.Y+3);
+		ctx.restore();
+	}
+}
+
 
 /**
 ** Fonctions pour le déplacement du joueur
@@ -395,6 +476,11 @@ function moveJoueur(delta){
 	
 	//Fonction qui servira lorsque le joueur n'aura plus de points de vie
 	function finPartie(){
+		if (joueur.vie==0){
+			alert("Vous avez perdu !");
+		}
+		joueur.vie=3;
+		//BaseObject.remiseAzero();
 		
 	}
 	
@@ -406,7 +492,12 @@ function moveJoueur(delta){
 //Déclaration des variables : 
 let ctx, canvas, w ,h;
 var inputStates = {};
-joueur= new Joueur(0,0,0,0,0);
+joueur= new Joueur(100,100,0,0);
+var coul="blue";
+ennemie= new Ennemi();
+//butin = new Butin(300,200,5,5,50,1,"blue");
+java=new JAVA(400,300,5,5,1);
+php=new PHP(200,200,7,7,1);
 
 window.onload = function() {
 
@@ -463,12 +554,28 @@ window.onload = function() {
 
 }
 
+function changeCouleur(event){
+  console.log(joueur.couleurCorps);
+  coul = event.target.value;
+  console.log("couleur corps apres :" + this.couleurCorps);
+}
+
+
 function animation(){
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	joueur.drawJoueur();
 	moveJoueur(10);
 	//console.log(joueur.vitX);
 	//joueur.X ++;
+	//butin.drawButin();
+	//butin.move();
+	java.drawJAVA();
+	java.move();
+	
+	php.drawPHP();
+	php.move();
+	
+	finPartie();
 	
 	
 	requestAnimationFrame(animation);
