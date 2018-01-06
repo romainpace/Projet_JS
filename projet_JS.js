@@ -35,7 +35,7 @@ class Ennemi extends baseObject{
     super();
   }
 
-  drawn(ctx){
+  draw(ctx){
     ctx.save();
 
     ctx.translate(10,10);
@@ -498,6 +498,7 @@ ennemie= new Ennemi();
 //butin = new Butin(300,200,5,5,50,1,"blue");
 java=new JAVA(400,300,5,5,1);
 php=new PHP(200,200,7,7,1);
+var ennemie= new Ennemi();
 
 window.onload = function() {
 
@@ -574,6 +575,9 @@ function animation(){
 	
 	php.drawPHP();
 	php.move();
+
+  ennemie.draw(ctx);
+  ennemie.move();
 	
 	finPartie();
 	
