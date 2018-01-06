@@ -33,13 +33,15 @@ class Ennemi extends baseObject{
 
   constructor(X,Y){
     super(X,Y,0,0,3);
+    this.width = 30;
+    this.height = 25;
   }
 
   draw(ctx){
     ctx.save();
 
     ctx.translate(this.X,this.Y);
-    ctx.fillRect(0, 0, 30, 25);
+    ctx.fillRect(0, 0, this.width, this.height);
 
     oeild(ctx);
     oeilg(ctx);
@@ -104,14 +106,17 @@ class Joueur extends baseObject{
 		this.points=0;// le nombre de points que l'on va obtenir au cours de la partie
 		this.couleurTete= "orange",
 		this.couleurCorps =coul;
-		 this.angleBrasGauche = 0.8;
+		this.angleBrasGauche = 0.8;
 		this.angleAvantBrasGauche = -0.2;
-  this.angleBrasDroit = -0.3; 
-  this.angleAvantBrasDroit = -0.2;
-  this.angleJambeGauche = 0.5; 
-  this.angleCuisseGauche = 0.2;
-  this.angleJambeDroite = 0.5; 
- this.angleCuisseDroite = 0.2;
+    this.angleBrasDroit = -0.3; 
+    this.angleAvantBrasDroit = -0.2;
+    this.angleJambeGauche = 0.5; 
+    this.angleCuisseGauche = 0.2;
+    this.angleJambeDroite = 0.5; 
+    this.angleCuisseDroite = 0.2;
+    this.width = 25;
+    this.height = 25;
+    this.score = 0;
 	}
 
 	//Va appeller la fonction detectionCollision et enlève un point de vie lorsqu'une collision est détecté.
@@ -131,7 +136,7 @@ class Joueur extends baseObject{
 		ctx.save();
 		ctx.translate(this.X,this.Y);
 		ctx.fillStyle="blue";
-		ctx.fillRect(0,0,25,25);
+		ctx.fillRect(0,0,this.width,this.height);
 		
 		this.dessineCouEtTete();
   
@@ -373,7 +378,7 @@ class Butin extends baseObject{
     //this.color = 'black';
 	}	
 	
-	move(){
+	/**move(){
 		
 		//var incX = this.vitX * Math.cos(this.angle);
 		//var incY = this.vitY * Math.sin(this.angle);
@@ -381,9 +386,10 @@ class Butin extends baseObject{
 		//this.X += calcDistanceToMove(10, incX);
 		//this.Y += calcDistanceToMove(10, incY);
 		
-		this.X += -Math.random();
-		this.Y += 0;
-	}
+		//this.X += -Math.random();
+		//this.Y += 0;
+
+	}**/
 }
 
 class JAVA extends Butin{
@@ -394,7 +400,7 @@ class JAVA extends Butin{
 		this.color="red";
 	}
 	
-	drawJAVA(){
+	draw(){
 		ctx.save();
 		ctx.beginPath();
 	  
@@ -415,7 +421,7 @@ class PHP extends Butin{
 		this.color="blue";
 	}
 	
-	drawPHP(){
+	draw(){
 		ctx.save();
 		ctx.beginPath();
 	  
@@ -483,27 +489,100 @@ function moveJoueur(delta){
 		//BaseObject.remiseAzero();
 		
 	}
-	
-	//Détection d'une collision entre joueur et ennemie
-	function detectionCollision(){
-		
-	}
+
+  //dectection collision entre butin et joueur
+  function colliButin(x0, y0, w0, h0, cx, cy, r){
+    var testX=cx;
+    var testY=cy;
+    
+    if (testX < x0) testX=x0; 
+    if (testX > (x0+w0)) testX=(x0+w0); 
+    if (testY < y0) testY=y0; 
+    if (testY > (y0+h0)) testY=(y0+h0)
+
+    return (((cx-testX)*(cx-testX)+(cy-testY)*(cy-testY))<r*r);
+  }
+
+  //detection collision entre joueur et ennemi
+  function colliEnnemi(x1,x2,y1,y2,w1,w2,h1,h2){
+    return (x1 < x2 + w2 &&
+      x1 + w1 > x2 &&
+      y1 < y2 + h2 &&
+      h1 + y1 > y2);
+  }
+
+
+function ColliWall(but) {
+
+    
+  if (but.X < but.radius) {
+      but.X = but.radius;
+      but.angle = -but.angle + Math.PI;
+  } 
+  
+  if (but.X > w - (but.radius)) {
+      but.X = w - (but.radius);
+      but.angle = -but.angle + Math.PI; 
+  }     
+  
+  if (but.Y < but.radius) {
+
+      but.Y = but.radius;
+      but.angle = -but.angle;     
+  }     
+  
+  if (but.Y > h - (but.radius)) {
+      but.Y = h - (but.radius);
+      but.angle =-but.angle; 
+  }
+  
+}
+
+function updatebut(){
+  for (var i = 0; i < butins.length; i++) {
+    var but = butins[i];
+
+    ColliWall(but);
+  }
+
+  
+}
+
+function updateEn(){
+
+}
+
+function updateJoueur(){
+
+}
  
+function update(){  
+  updatebut();
+  updateEn();
+  updateJoueur();
+}
 //Déclaration des variables : 
 let ctx, canvas, w ,h;
-var inputStates = {};
+var inputStates = [];
 joueur= new Joueur(100,100,0,0);
 var coul="blue";
-ennemie= new Ennemi();
+let butins = []; // tableau de l'ensemble des butins 
+var ennemis = [];
 //butin = new Butin(300,200,5,5,50,1,"blue");
 java=new JAVA(400,300,5,5,1);
 php=new PHP(200,200,7,7,1);
-var ennemie= new Ennemi(10,10);
+
 
 window.onload = function() {
 
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
+
+    w = canvas.width;
+    h = canvas.height;
+
+    createEnnemi(3);
+    createButin(3);
 	
 	 //Ajout de l'écouteur pour les touches clavier
       window.addEventListener('keydown', function(event){
@@ -555,6 +634,45 @@ window.onload = function() {
 
 }
 
+//ajout des ennemis dans le tab
+
+function createEnnemi(nb){
+
+  for(var i=0; i < nb; i++) {
+    
+    var en =  new Ennemi(w*Math.random(),h*Math.random());
+    
+    if(!colliEnnemi(en.X,joueur.X-20,en.Y,joueur.Y-20,en.width,joueur.width+40,en.height,joueur.height+40)){
+      
+    ennemis[i] = en;
+    } else {
+      i--;
+    }    
+  }
+
+}
+
+function createButin(nb){
+
+  for(var i=0; i < nb; i++) {
+    
+    if (2*Math.random()<1){
+      var but =  new JAVA(w*Math.random(),h*Math.random(),5,5,1);
+    } else {
+      var but =  new PHP(w*Math.random(),h*Math.random(),7,7,1);
+    }
+
+
+    if(!colliButin(joueur.X-20,joueur.Y-20,joueur.width+40,joueur.height+40,but.X,but.Y,but.radius)){
+    
+    butins[i] = but;
+    } else {
+      i--;
+    }    
+  }
+
+}
+
 function changeCouleur(event){
   console.log(joueur.couleurCorps);
   coul = event.target.value;
@@ -570,14 +688,28 @@ function animation(){
 	//joueur.X ++;
 	//butin.drawButin();
 	//butin.move();
-	java.drawJAVA();
-	java.move();
 	
-	php.drawPHP();
-	php.move();
+  update();
 
-  ennemie.draw(ctx);
-  ennemie.move();
+  for (var i = 0; i < ennemis.length; i++) {
+    ennemis[i].move();
+    ennemis[i].draw(ctx);
+  }
+
+  for (var i = 0; i < butins.length; i++) {
+    butins[i].move();
+    butins[i].draw(ctx);
+  }
+
+
+
+  if (colliButin(joueur.X, joueur.Y, joueur.width, joueur.height, butins[0].X, butins[0].Y, butins[0].radius)){
+    console.log('ca marche rond !!!');
+  }
+
+  if (colliEnnemi(ennemis[0].X,joueur.X,ennemis[0].Y,joueur.Y,ennemis[0].width,joueur.width,ennemis[0].height,joueur.height)){
+    console.log('ca marche !!!');
+  }
 	
 	finPartie();
 	
