@@ -3,11 +3,10 @@
 
 class baseObject{
     
-    constructor(X, Y, vitX, vitY, vie){
+    constructor(X, Y, vit, vie){
       this.X = X;
       this.Y = Y;
-      this.vitX = vitX;
-      this.vitY = vitY;
+      this.vit = vit
       this.vie = vie;
     }
 
@@ -17,8 +16,8 @@ class baseObject{
     }
 
     move(){
-      this.X += this.vitX;
-      this.Y += this.vitY;
+      this.X += this.vit;
+      this.Y += this.vit;
     }
 	
 	//Cette fonction sera utile pour les ennemies et butins. Si un ennemie ou un butin sort du canvas, cette fonction le fera revenir au point opposé à celui dont il est sortit (j'espère que cette phrase est clair)
@@ -32,25 +31,26 @@ class baseObject{
 class Ennemi extends baseObject{
 
   constructor(X,Y){
-    super(X,Y,0,0,3);
+    super(X,Y,250,3);
     this.width = 30;
     this.height = 25;
+    this.angle = 90*Math.random();
   }
 
-  draw(ctx){
+  draw(){
     ctx.save();
 
     ctx.translate(this.X,this.Y);
     ctx.fillRect(0, 0, this.width, this.height);
 
-    oeild(ctx);
-    oeilg(ctx);
-    bouche(ctx);
+    oeild();
+    oeilg();
+    bouche();
     
     ctx.restore();
 
 
-    function oeild(ctx){
+    function oeild(){
       ctx.save();
       ctx.translate(5,5);
       ctx.fillStyle='red';
@@ -64,7 +64,7 @@ class Ennemi extends baseObject{
       ctx.restore();
     }
 
-    function oeilg(ctx){
+    function oeilg(){
       ctx.save();
       ctx.translate(20,5);
       ctx.fillStyle='red';
@@ -78,7 +78,7 @@ class Ennemi extends baseObject{
       ctx.restore();
     }
 
-    function bouche(ctx){
+    function bouche(){
       ctx.save();
 
       ctx.fillStyle='red';
@@ -96,12 +96,21 @@ class Ennemi extends baseObject{
     }
 
   }
+  
+  move(){
+    var incX = this.vit * Math.cos(this.angle);
+    var incY = this.vit * Math.sin(this.angle);
+
+    
+    this.X += calcDistanceToMove(delta, incX);
+    this.Y += calcDistanceToMove(delta, incY);
+  }
 
 }
 
 class Joueur extends baseObject{
-	constructor(X,Y,vitX,vitY,vie){
-		super(X,Y,vitX,vitY);
+	constructor(X,Y,vit,vie){
+		super(X,Y,vit,vie);
 		this.vie=3;//On accorde 3 points de vie au joueur
 		this.points=0;// le nombre de points que l'on va obtenir au cours de la partie
 		this.couleurTete= "orange",
@@ -357,12 +366,12 @@ dessinePiedDroit() {
 }
 
 class Butin extends baseObject{
-	constructor(X, Y, vitX, vitY, taille, vie,color){
-		super(X, Y, vitX, vitY, vie);
+	constructor(X, Y, vit, taille, vie,color){
+		super(X, Y, vit, vie);
 		this.taille=taille;
 		this.radius= taille/2;
 		this.color=color;
-		this.angle=20;
+		this.angle=90*Math.random();
 	}
 	
 	drawButin(){
@@ -378,26 +387,26 @@ class Butin extends baseObject{
     //this.color = 'black';
 	}	
 	
-	/**move(){
+	move(){
 		
-		//var incX = this.vitX * Math.cos(this.angle);
-		//var incY = this.vitY * Math.sin(this.angle);
-    
-		//this.X += calcDistanceToMove(10, incX);
-		//this.Y += calcDistanceToMove(10, incY);
-		
-		//this.X += -Math.random();
-		//this.Y += 0;
 
-	}**/
+		var incX = this.vit * Math.cos(this.angle);
+    var incY = this.vit * Math.sin(this.angle);
+
+    
+    this.X += calcDistanceToMove(delta, incX);
+    this.Y += calcDistanceToMove(delta, incY);
+
+	}
 }
 
 class JAVA extends Butin{
-	constructor(X, Y, vitX, vitY, vie){
-		super(X, Y, vitX, vitY,vie);
+	constructor(X, Y, vit, vie){
+		super(X, Y, vit,vie);
 		//this.taille=30;
 		this.radius=15;
 		this.color="red";
+
 	}
 	
 	draw(){
@@ -414,8 +423,8 @@ class JAVA extends Butin{
 }
 
 class PHP extends Butin{
-	constructor(X, Y, vitX, vitY, vie){
-		super(X, Y, vitX, vitY,vie);
+	constructor(X, Y, vit, vie){
+		super(X, Y, vit,vie);
 		//this.taille=30;
 		this.radius=25;
 		this.color="blue";
@@ -465,9 +474,9 @@ function moveJoueur(delta){
           joueur.vit = 100;
         }
 		joueur.X += calcDistanceToMove(delta, joueur.vitX);
-        joueur.Y += calcDistanceToMove(delta, joueur.vitY);
+    joueur.Y += calcDistanceToMove(delta, joueur.vitY);
 }
-  var calcDistanceToMove = function(delta, vit) {
+  function calcDistanceToMove(delta, vit) {
     return (vit * delta) / 1000; 
   };
   
@@ -512,7 +521,7 @@ function moveJoueur(delta){
   }
 
 
-function ColliWall(but) {
+function ColliWallBut(but) {
 
     
   if (but.X < but.radius) {
@@ -521,7 +530,7 @@ function ColliWall(but) {
   } 
   
   if (but.X > w - (but.radius)) {
-      but.X = w - (but.radius);
+      but.X = w - but.radius;
       but.angle = -but.angle + Math.PI; 
   }     
   
@@ -532,8 +541,33 @@ function ColliWall(but) {
   }     
   
   if (but.Y > h - (but.radius)) {
-      but.Y = h - (but.radius);
+      but.Y = h - but.radius;
       but.angle =-but.angle; 
+  }
+  
+}
+
+function ColliWallEn(en) {
+
+    
+  if(en.X < 0){
+    en.X = 0;
+    en.angle = -en.angle + Math.PI;
+  }
+
+  if(en.X + en.width  > w){
+    en.X = w - en.width;
+    en.angle = -en.angle + Math.PI;
+  }
+
+  if(en.Y < 0){
+    en.Y = 0;
+    en.angle = -en.angle;
+  }
+
+  if(en.Y + en.height > h){
+    en.Y = h - en.height;
+    en.angle = -en.angle;
   }
   
 }
@@ -542,24 +576,32 @@ function updatebut(){
   for (var i = 0; i < butins.length; i++) {
     var but = butins[i];
 
-    ColliWall(but);
+    ColliWallBut(but);
+
+    but.move();
+
+    but.draw();
   }
 
   
 }
 
 function updateEn(){
+  for (var i = 0; i < ennemis.length; i++) {
+    var en = ennemis[i];
 
+    ColliWallEn(en);
+
+    en.move();
+
+    en.draw();
+  }
 }
 
-function updateJoueur(){
-
-}
  
 function update(){  
   updatebut();
   updateEn();
-  updateJoueur();
 }
 //Déclaration des variables : 
 let ctx, canvas, w ,h;
@@ -569,20 +611,30 @@ var coul="blue";
 let butins = []; // tableau de l'ensemble des butins 
 var ennemis = [];
 //butin = new Butin(300,200,5,5,50,1,"blue");
-java=new JAVA(400,300,5,5,1);
-php=new PHP(200,200,7,7,1);
 
+var frameCount = 0;
+var lastTime;
+var fpsContainer;
+var fps; 
+// for time based animation
+var delta, oldTime = 0;
 
 window.onload = function() {
 
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
 
+    fpsContainer = document.createElement('div');
+    document.body.appendChild(fpsContainer);
+
     w = canvas.width;
     h = canvas.height;
 
+    
+
     createEnnemi(3);
     createButin(3);
+
 	
 	 //Ajout de l'écouteur pour les touches clavier
       window.addEventListener('keydown', function(event){
@@ -630,7 +682,7 @@ window.onload = function() {
 
 	//joueur.drawJoueur(10,10);
 	//console.log("ok");
-	animation();
+	requestAnimationFrame(animation);
 
 }
 
@@ -657,9 +709,9 @@ function createButin(nb){
   for(var i=0; i < nb; i++) {
     
     if (2*Math.random()<1){
-      var but =  new JAVA(w*Math.random(),h*Math.random(),5,5,1);
+      var but =  new JAVA(w*Math.random(),h*Math.random(),500,1);
     } else {
-      var but =  new PHP(w*Math.random(),h*Math.random(),7,7,1);
+      var but =  new PHP(w*Math.random(),h*Math.random(),700,1);
     }
 
 
@@ -679,9 +731,40 @@ function changeCouleur(event){
   console.log("couleur corps apres :" + this.couleurCorps);
 }
 
+function measureFPS(newTime){
+  // test for the very first invocation
+  if(lastTime === undefined) {
+    lastTime = newTime; 
+    return;
+  }
+      
+  var diffTime = newTime - lastTime; 
 
-function animation(){
+  if (diffTime >= 1000) {
+     fps = frameCount;    
+     frameCount = 0;
+     lastTime = newTime;
+  }
+
+  fpsContainer.innerHTML = 'FPS: ' + fps; 
+  frameCount++;
+}
+
+function timer(currentTime) {
+  var delta = currentTime - oldTime;
+  oldTime = currentTime;
+  return delta;
+  
+}
+
+function animation(time){
+
+  measureFPS(time);
+
+  delta = timer(time);
+
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
+
 	joueur.drawJoueur();
 	moveJoueur(10);
 	//console.log(joueur.vitX);
@@ -689,18 +772,7 @@ function animation(){
 	//butin.drawButin();
 	//butin.move();
 	
-  update();
-
-  for (var i = 0; i < ennemis.length; i++) {
-    ennemis[i].move();
-    ennemis[i].draw(ctx);
-  }
-
-  for (var i = 0; i < butins.length; i++) {
-    butins[i].move();
-    butins[i].draw(ctx);
-  }
-
+  update(delta);
 
 
   if (colliButin(joueur.X, joueur.Y, joueur.width, joueur.height, butins[0].X, butins[0].Y, butins[0].radius)){
@@ -716,3 +788,4 @@ function animation(){
 	
 	requestAnimationFrame(animation);
 }
+
