@@ -31,14 +31,14 @@ class baseObject{
 
 class Ennemi extends baseObject{
 
-  constructor(){
-    super();
+  constructor(X,Y){
+    super(X,Y,0,0,3);
   }
 
   draw(ctx){
     ctx.save();
 
-    ctx.translate(10,10);
+    ctx.translate(this.X,this.Y);
     ctx.fillRect(0, 0, 30, 25);
 
     oeild(ctx);
@@ -498,7 +498,7 @@ ennemie= new Ennemi();
 //butin = new Butin(300,200,5,5,50,1,"blue");
 java=new JAVA(400,300,5,5,1);
 php=new PHP(200,200,7,7,1);
-var ennemie= new Ennemi();
+var ennemie= new Ennemi(10,10);
 
 window.onload = function() {
 
