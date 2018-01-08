@@ -756,11 +756,6 @@ function createButin(nb){
 
 }
 
-function changeCouleur(event){
-  console.log(joueur.couleurCorps);
-  coul = event.target.value;
-  console.log("couleur corps apres :" + this.couleurCorps);
-}
 
 function measureFPS(newTime){
   // test for the very first invocation
