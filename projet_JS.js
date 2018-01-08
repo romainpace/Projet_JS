@@ -366,11 +366,8 @@ dessinePiedDroit() {
 }
 
 class Butin extends baseObject{
-	constructor(X, Y, vit, taille, vie,color){
+	constructor(X, Y, vit, vie){
 		super(X, Y, vit, vie);
-		this.taille=taille;
-		this.radius= taille/2;
-		this.color=color;
 		this.angle=90*Math.random();
 	}
 	
@@ -404,6 +401,7 @@ class JAVA extends Butin{
 	constructor(X, Y, vit, vie){
 		super(X, Y, vit,vie);
 		//this.taille=30;
+    this.pt=2;
 		this.radius=15;
 		this.color="red";
 
@@ -426,6 +424,7 @@ class PHP extends Butin{
 	constructor(X, Y, vit, vie){
 		super(X, Y, vit,vie);
 		//this.taille=30;
+    this.pt=1;
 		this.radius=25;
 		this.color="blue";
 	}
@@ -471,7 +470,7 @@ function moveJoueur(delta){
             joueur.vit = 500;
         } else {
           // mouse up
-          joueur.vit = 100;
+          joueur.vit = 300;
         }
 		joueur.X += calcDistanceToMove(delta, joueur.vitX);
     joueur.Y += calcDistanceToMove(delta, joueur.vitY);
@@ -491,10 +490,10 @@ function moveJoueur(delta){
 	
 	//Fonction qui servira lorsque le joueur n'aura plus de points de vie
 	function finPartie(){
-		if (joueur.vie==0){
+		if (joueur.vie<=0){
 			alert("Vous avez perdu !");
 		}
-		joueur.vie=3;
+		//joueur.vie=3;
 		//BaseObject.remiseAzero();
 		
 	}
@@ -513,11 +512,14 @@ function moveJoueur(delta){
   }
 
   //detection collision entre joueur et ennemi
-  function colliEnnemi(x1,x2,y1,y2,w1,w2,h1,h2){
-    return (x1 < x2 + w2 &&
-      x1 + w1 > x2 &&
-      y1 < y2 + h2 &&
-      h1 + y1 > y2);
+  function colliEnnemi(x1,y1,w1,h1,en){
+    
+
+
+    return (x1 < en.X + en.width &&
+      x1 + w1 > en.X &&
+      y1 < en.Y + en.height &&
+      h1 + y1 > en.Y);
   }
 
 
@@ -572,18 +574,35 @@ function ColliWallEn(en) {
   
 }
 
+
 function updatebut(){
+
   for (var i = 0; i < butins.length; i++) {
     var but = butins[i];
 
     ColliWallBut(but);
 
-    but.move();
 
-    but.draw();
+    if (colliButin(joueur.X, joueur.Y, joueur.width, joueur.height, but.X, but.Y, but.radius)){
+      but.vie=0;
+    }
+
+    if(but.vie>0){
+      but.move();
+      but.draw();
+    }else{
+      joueur.score += but.pt;
+      butins.splice(i,1);
+    }
+
+    if (butins[0] == undefined){
+      nbennemis++;
+      createButin(3);
+      createEnnemi(nbennemis);
+    }
+    
   }
 
-  
 }
 
 function updateEn(){
@@ -592,9 +611,19 @@ function updateEn(){
 
     ColliWallEn(en);
 
-    en.move();
+    
+    if (colliEnnemi(joueur.X,joueur.Y,joueur.width,joueur.height,en)){
+      --joueur.vie;
+      while(colliEnnemi(joueur.X-20,joueur.Y-20,joueur.width+40,joueur.height+40,en)){
+        en.X=w*Math.random();
+        en.Y=h*Math.random();
+      }
+    }
 
-    en.draw();
+    if(en.vie>0){
+      en.move();
+      en.draw();
+    }
   }
 }
 
@@ -606,10 +635,11 @@ function update(){
 //Déclaration des variables : 
 let ctx, canvas, w ,h;
 var inputStates = [];
-joueur= new Joueur(100,100,0,0);
+var joueur= new Joueur(100,100,0,0);
 var coul="blue";
 let butins = []; // tableau de l'ensemble des butins 
 var ennemis = [];
+var nbennemis = 1;
 //butin = new Butin(300,200,5,5,50,1,"blue");
 
 var frameCount = 0;
@@ -618,6 +648,7 @@ var fpsContainer;
 var fps; 
 // for time based animation
 var delta, oldTime = 0;
+
 
 window.onload = function() {
 
@@ -632,7 +663,7 @@ window.onload = function() {
 
     
 
-    createEnnemi(3);
+    createEnnemi(nbennemis);
     createButin(3);
 
 	
@@ -694,7 +725,7 @@ function createEnnemi(nb){
     
     var en =  new Ennemi(w*Math.random(),h*Math.random());
     
-    if(!colliEnnemi(en.X,joueur.X-20,en.Y,joueur.Y-20,en.width,joueur.width+40,en.height,joueur.height+40)){
+    if(!colliEnnemi(joueur.X-20,joueur.Y-20,joueur.width+40,joueur.height+40,en)){
       
     ennemis[i] = en;
     } else {
@@ -709,9 +740,9 @@ function createButin(nb){
   for(var i=0; i < nb; i++) {
     
     if (2*Math.random()<1){
-      var but =  new JAVA(w*Math.random(),h*Math.random(),500,1);
+      var but =  new JAVA(w*Math.random(),h*Math.random(),450,1);
     } else {
-      var but =  new PHP(w*Math.random(),h*Math.random(),700,1);
+      var but =  new PHP(w*Math.random(),h*Math.random(),450,1);
     }
 
 
@@ -757,6 +788,19 @@ function timer(currentTime) {
   
 }
 
+function afficheInfo(){
+  ctx.save();
+  ctx.translate(350,15);
+  ctx.fillText('Score :',0,0);
+  ctx.translate(35,0);
+  ctx.fillText(joueur.score,0,0);
+  ctx.translate(15,0);
+  ctx.fillText('Vie :',0,0);
+  ctx.translate(24,0);
+  ctx.fillText(joueur.vie,0,0);
+  ctx.restore();
+}
+
 function animation(time){
 
   measureFPS(time);
@@ -772,16 +816,10 @@ function animation(time){
 	//butin.drawButin();
 	//butin.move();
 	
-  update(delta);
+  update();
 
-
-  if (colliButin(joueur.X, joueur.Y, joueur.width, joueur.height, butins[0].X, butins[0].Y, butins[0].radius)){
-    console.log('ca marche rond !!!');
-  }
-
-  if (colliEnnemi(ennemis[0].X,joueur.X,ennemis[0].Y,joueur.Y,ennemis[0].width,joueur.width,ennemis[0].height,joueur.height)){
-    console.log('ca marche !!!');
-  }
+  afficheInfo();
+  
 	
 	finPartie();
 	
