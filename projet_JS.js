@@ -597,6 +597,7 @@ function updatebut(){
 
     if (butins[0] == undefined){
       nbennemis++;
+      joueur.vie++;
       createButin(3);
       createEnnemi(nbennemis);
     }
